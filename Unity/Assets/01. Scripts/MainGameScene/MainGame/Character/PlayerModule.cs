@@ -66,6 +66,6 @@ public class PlayerModule : CharacterModule
         if (true == Input.GetMouseButton(0))
         {
             _character.Fire();
-        }
+		}
     }
 }

@@ -8,12 +8,17 @@ public class Character : MonoBehaviour
 
     [SerializeField] RuntimeAnimatorController _animatorController;
     
-    enum CharType
+    public enum CharType
     {
         Player,
         NPC
     }
     [SerializeField] CharType _charType = CharType.NPC;
+
+	public CharType GetCharacterType()
+	{
+		return _charType;
+	}
 
     List<CharacterModule> _charModuleList = new List<CharacterModule>();
     CharacterModule _characterModule = null;
@@ -80,28 +85,45 @@ public class Character : MonoBehaviour
 
             UpdateState();
             UpdateMove();
-        }        
-    }
-
-    void OnTriggerEnter(Collider other)
-    {
-        // 충돌 시 룰
-        if (other.gameObject.Equals(gameObject))
-            return;
-
-        switch (_stateType)
-        {
-            case eState.WALK:
-            case eState.RUN:
-            case eState.SLIDE:
-                ChangeState(eState.IDLE);
-                break;
         }
+	}
+
+	float _hp = 100.0f;
+	void OnTriggerEnter(Collider other)
+    {
+		if (eState.DEATH == _stateType)
+			return;
+
+		// 캐릭터
+			// tag가 총알 태그이면
+			// other.gameObject 에서 총알 스크립트 컴포넌트를 뽑아냄
+			// 총알 스크립트의 쏜 객체 정보 조사
+			// 그 정보가 나이면 패스
+			// tag가 총알 태그이면
+		
+		//if (other.gameObject.Equals(gameObject))
+        //    return;
+		// 내가 쏜 총알일 때 패스
+		if(true == other.gameObject.tag.Equals("Bullet"))
+		{
+			Bullet bullet = other.gameObject.GetComponent<Bullet>();
+			if (_charType == bullet.ShotCharacterType())
+				return;
+		}
+
+		if(_hp <= 0.0f)
+		{
+			ChangeState(eState.DEATH);
+		}
+		else
+		{
+			_hp-=10;
+		}
     }
 
     void OnTriggerExit(Collider other)
     {
-        // 나일 때는 패스
+        // 내가 쏜 총알일 때 패스
         if (other.gameObject.Equals(gameObject))
             return;
     }
@@ -236,19 +258,21 @@ public class Character : MonoBehaviour
 
     [SerializeField] GameObject _bulletPrefab;
 
-    float _curTestRot = 0;
-    public void Fire()
+    float _curTestRot = 0;      // 임시 변수
+	public void Fire()
     {
         // 총알을 생성
         GameObject bulletObject = GameObject.Instantiate<GameObject>(_bulletPrefab);
-        bulletObject.transform.position =
-            new Vector3(transform.position.x,
-            transform.position.y+1, transform.position.z+1);
-        bulletObject.transform.rotation = transform.rotation;
+		Vector3 bulletPos = transform.position +
+			(transform.forward * 1.5f) +
+			(transform.up * 1.0f);
+		bulletObject.transform.position = bulletPos;
+		bulletObject.transform.rotation = transform.rotation;
 
-        // for test
-        bulletObject.transform.Rotate(Vector3.up, _curTestRot);
-        //_curTestRot += 45;
-        _curTestRot = Mathf.Sin(Time.deltaTime * 500.0f);
-    }
+		Bullet bullet = bulletObject.GetComponent<Bullet>();
+		bullet.SetShotCharacterType(_charType);
+
+		bulletObject.transform.Rotate(Vector3.up, _curTestRot);
+		_curTestRot += 30;
+	}
 }

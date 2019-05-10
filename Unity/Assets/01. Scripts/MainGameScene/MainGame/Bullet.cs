@@ -6,29 +6,62 @@ public class Bullet : MonoBehaviour
 {
 	void Start ()
     {
-        Destroy(gameObject, 3.0f);
+        Destroy(gameObject, 10.0f);
 	}
 
-    float _curTestRot = 0;
-
+    //float _curTestRot = 0;	 // 임시 변수
     void Update ()
     {
-        // z 축을 변경 (양의 값으로)
-        /*
-        Vector3 curPos = transform.position;
-        Vector3 nextPos = new Vector3(curPos.x, curPos.y, curPos.z + 0.1f);
-        transform.position = nextPos;
-        */
+		Vector3 curPos = transform.position;
+		Vector3 nextPos = curPos + (transform.forward * 0.1f);
+		transform.position = nextPos;
 
-        // for test
-        transform.position = transform.position + (transform.forward * 0.1f);
-        transform.Rotate(Vector3.up, _curTestRot);
-        _curTestRot -= 0.01f;
-        //_curTestRot = Mathf.Cos(Time.deltaTime) * 100.0f;
-    }
+		//transform.Rotate(Vector3.up, _curTestRot);
+		//_curTestRot -= 0.01f;
+	}
 
+	[SerializeField] GameObject _effectPrefab;
     void OnTriggerEnter(Collider other)
     {
-        Destroy(gameObject);
-    }
+		// 총알
+		// 태그가 캐릭터이면
+		// other.gameObject 에서 캐릭터 스크립트 컴포넌트를 뽑아냄
+		// 죽었으면, 패스
+		// 태그가 건물이면
+		// other.gameObject 에서 건물 스크립트 컴포넌트를 뽑아냄
+		// 죽었으면(파괴되었으면), 패스
+		// 우리게임에서 사용하는 게임 오브젝트인가?
+		// 공통된 스크립트 컴포넌트를 뽑아냄.
+		// 컴포넌트가 충돌 가능한가를 체크.
+		// 충돌 또는 패스
+
+		// 내 총알의 주인이 부딪쳤으면 패스
+		if (true == other.gameObject.tag.Equals("Character"))
+		{
+			Character character = other.gameObject.GetComponent<Character>();
+			if (_shotCharType == character.GetCharacterType())
+				return;
+		}
+
+
+		// 폭발 효과 실행 (스프라이트)
+		GameObject effObject = GameObject.Instantiate(_effectPrefab);
+		effObject.transform.position = transform.position;
+		effObject.transform.localScale = Vector3.one;
+		Destroy(effObject, 1.5f);
+
+		Destroy(gameObject);
+	}
+
+	Character.CharType _shotCharType;
+
+	public Character.CharType ShotCharacterType()
+	{
+		return _shotCharType;
+	}
+
+	public void SetShotCharacterType(Character.CharType charType)
+	{
+		_shotCharType = charType;
+	}
 }
