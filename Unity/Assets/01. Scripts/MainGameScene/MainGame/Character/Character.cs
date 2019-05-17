@@ -258,21 +258,40 @@ public class Character : MonoBehaviour
 
     [SerializeField] GameObject _bulletPrefab;
 
-    float _curTestRot = 0;      // 임시 변수
-	public void Fire()
+    float _shotSpeed = 0.1f;
+    float _shotDuration = 0.0f;
+    float _shotAngle = 0.0f;
+    float _shotAngleRate = -10.0f;
+
+    int _shotCount = 4;
+
+    public void Fire()
+    {
+        if(_shotSpeed <= _shotDuration)
+        {
+            _shotDuration = 0.0f;
+
+            for(int i=0; i< _shotCount; i++)
+            {
+                float shotAngle = _shotAngle + (360.0f * (float)i / (float)_shotCount);
+                CreateBullet(shotAngle);
+            }
+            
+            _shotAngle += _shotAngleRate;
+        }
+        _shotDuration += Time.deltaTime;
+    }
+
+    void CreateBullet(float shotAngle)
     {
         // 총알을 생성
         GameObject bulletObject = GameObject.Instantiate<GameObject>(_bulletPrefab);
-		Vector3 bulletPos = transform.position +
-			(transform.forward * 1.5f) +
-			(transform.up * 1.0f);
-		bulletObject.transform.position = bulletPos;
-		bulletObject.transform.rotation = transform.rotation;
+        Vector3 bulletPos = transform.position + (transform.up * 1.0f);
+        bulletObject.transform.position = bulletPos;
+        bulletObject.transform.rotation = transform.rotation;
+        bulletObject.transform.Rotate(Vector3.up, shotAngle);
 
-		Bullet bullet = bulletObject.GetComponent<Bullet>();
-		bullet.SetShotCharacterType(_charType);
-
-		bulletObject.transform.Rotate(Vector3.up, _curTestRot);
-		_curTestRot += 30;
-	}
+        Bullet bullet = bulletObject.GetComponent<Bullet>();
+        bullet.SetShotCharacterType(_charType);
+    }
 }
