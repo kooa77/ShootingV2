@@ -74,6 +74,8 @@ public class Character : MonoBehaviour
     {
         _characterModule = _charModuleList[(int)_charType];
         _characterModule.BuildStateList();
+
+        CreateWeapon();
     }
     
     // Update is called once per frame
@@ -258,16 +260,53 @@ public class Character : MonoBehaviour
 
     [SerializeField] GameObject _bulletPrefab;
 
+    //SpiralWeapon _spiralWeapon1;
+    //SpiralWeapon _spiralWeapon2;
+    List<SpiralWeapon> _spiralWeaponList = new List<SpiralWeapon>();
+
+    /*
     float _shotSpeed = 0.1f;
     float _shotDuration = 0.0f;
     float _shotAngle = 0.0f;
     float _shotAngleRate = -10.0f;
 
     int _shotCount = 4;
+    */
+
+    void CreateWeapon()
+    {
+        _spiralWeaponList.Clear();
+        {
+            SpiralWeapon spiralWeapon = new SpiralWeapon();
+            spiralWeapon.SetOwner(this);
+            spiralWeapon.SetAngleRate(10.0f);
+            spiralWeapon.SetBulletSpeedRate(5.0f);
+            spiralWeapon.SetBulletAngleRate(10.0f);
+            _spiralWeaponList.Add(spiralWeapon);
+        }
+        {
+            SpiralWeapon spiralWeapon = new SpiralWeapon();
+            spiralWeapon.SetOwner(this);
+            spiralWeapon.SetAngleRate(-10.0f);
+            spiralWeapon.SetBulletSpeedRate(5.0f);
+            spiralWeapon.SetBulletAngleRate(10.0f);
+            _spiralWeaponList.Add(spiralWeapon);
+        }
+    }
 
     public void Fire()
     {
-        if(_shotSpeed <= _shotDuration)
+        for(int i=0; i<_spiralWeaponList.Count; i++)
+        {
+            _spiralWeaponList[i].Fire(_bulletPrefab);
+        }
+
+        /*
+        _spiralWeapon1.Fire(_bulletPrefab);
+        _spiralWeapon2.Fire(_bulletPrefab);
+        */
+        /*
+        if (_shotSpeed <= _shotDuration)
         {
             _shotDuration = 0.0f;
 
@@ -280,8 +319,10 @@ public class Character : MonoBehaviour
             _shotAngle += _shotAngleRate;
         }
         _shotDuration += Time.deltaTime;
+        */
     }
 
+    /*
     void CreateBullet(float shotAngle)
     {
         // 총알을 생성
@@ -294,4 +335,5 @@ public class Character : MonoBehaviour
         Bullet bullet = bulletObject.GetComponent<Bullet>();
         bullet.SetShotCharacterType(_charType);
     }
+    */
 }

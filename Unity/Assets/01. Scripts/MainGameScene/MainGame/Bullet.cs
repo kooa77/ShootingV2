@@ -5,8 +5,12 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     float _speed = 2.5f;
+    float _speedRate = .0f;
 
-	void Start ()
+    float _angle = 0.0f;
+    float _angleRate = 0.0f;
+
+    void Start ()
     {
         Destroy(gameObject, 10.0f);
 	}
@@ -18,8 +22,10 @@ public class Bullet : MonoBehaviour
 		Vector3 nextPos = curPos + (transform.forward * _speed * Time.deltaTime);
 		transform.position = nextPos;
 
-		//transform.Rotate(Vector3.up, _curTestRot);
-		//_curTestRot -= 0.01f;
+        _speed += (_speedRate * Time.deltaTime);
+
+		transform.Rotate(Vector3.up, _angle);
+        _angle += (_angleRate * Time.deltaTime);
 	}
 
 	[SerializeField] GameObject _effectPrefab;
@@ -54,4 +60,15 @@ public class Bullet : MonoBehaviour
 	{
 		_shotCharType = charType;
 	}
+
+    public void SetSpeedRate(float rate)
+    {
+        _speedRate = rate;
+    }
+
+    public void SetAngleRate(float rate)
+    {
+        
+        _angleRate = rate;
+    }
 }
