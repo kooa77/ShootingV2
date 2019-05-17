@@ -6,7 +6,7 @@ public class Character : MonoBehaviour
 {
     [SerializeField] List<GameObject> _charPrefabList;
 
-    [SerializeField] RuntimeAnimatorController _animatorController;
+	[SerializeField] RuntimeAnimatorController _animatorController;
     
     public enum CharType
     {
@@ -75,8 +75,8 @@ public class Character : MonoBehaviour
         _characterModule = _charModuleList[(int)_charType];
         _characterModule.BuildStateList();
 
-        CreateWeapon();
-    }
+		CreateWeapon();
+	}
     
     // Update is called once per frame
     void Update()
@@ -242,15 +242,6 @@ public class Character : MonoBehaviour
         Vector3 curPos = new Vector3(charPos.x, 0.0f, charPos.z);
         Vector3 destPos = new Vector3(_destPoint.x, 0.0f, _destPoint.z);
         Vector3 direction = (destPos - curPos).normalized;
-
-        /*
-        Vector3 lookPos = new Vector3(_destPoint.x, charPos.y, _destPoint.z);
-        Quaternion targetRotation = Quaternion.LookRotation(direction);
-        transform.rotation = Quaternion.RotateTowards(
-                                    transform.rotation,
-                                    targetRotation,
-                                    360.0f * Time.deltaTime);
-        */
         
         return direction;
     }
@@ -260,80 +251,34 @@ public class Character : MonoBehaviour
 
     [SerializeField] GameObject _bulletPrefab;
 
-    //SpiralWeapon _spiralWeapon1;
-    //SpiralWeapon _spiralWeapon2;
-    List<SpiralWeapon> _spiralWeaponList = new List<SpiralWeapon>();
+	List<SpiralWeapon> _weaponList = new List<SpiralWeapon>();
 
-    /*
-    float _shotSpeed = 0.1f;
-    float _shotDuration = 0.0f;
-    float _shotAngle = 0.0f;
-    float _shotAngleRate = -10.0f;
+	void CreateWeapon()
+	{
+		_weaponList.Clear();
+		{
+			SpiralWeapon sprialWeapon = new SpiralWeapon();
+			sprialWeapon.SetOwner(this);
+			sprialWeapon.SetAngleRate(20.0f);
+			sprialWeapon.SetBulletSpeedRate(1.0f);
+			sprialWeapon.SetBulletAngleRate(1.0f);
+			_weaponList.Add(sprialWeapon);
+		}
+		{
+			SpiralWeapon sprialWeapon = new SpiralWeapon();
+			sprialWeapon.SetOwner(this);
+			sprialWeapon.SetAngleRate(-10.0f);
+			sprialWeapon.SetBulletSpeedRate(1.0f);
+			sprialWeapon.SetBulletAngleRate(-1.0f);
+			_weaponList.Add(sprialWeapon);
+		}
+	}
 
-    int _shotCount = 4;
-    */
-
-    void CreateWeapon()
+	public void Fire()
     {
-        _spiralWeaponList.Clear();
-        {
-            SpiralWeapon spiralWeapon = new SpiralWeapon();
-            spiralWeapon.SetOwner(this);
-            spiralWeapon.SetAngleRate(10.0f);
-            spiralWeapon.SetBulletSpeedRate(5.0f);
-            spiralWeapon.SetBulletAngleRate(10.0f);
-            _spiralWeaponList.Add(spiralWeapon);
-        }
-        {
-            SpiralWeapon spiralWeapon = new SpiralWeapon();
-            spiralWeapon.SetOwner(this);
-            spiralWeapon.SetAngleRate(-10.0f);
-            spiralWeapon.SetBulletSpeedRate(5.0f);
-            spiralWeapon.SetBulletAngleRate(10.0f);
-            _spiralWeaponList.Add(spiralWeapon);
-        }
-    }
-
-    public void Fire()
-    {
-        for(int i=0; i<_spiralWeaponList.Count; i++)
-        {
-            _spiralWeaponList[i].Fire(_bulletPrefab);
-        }
-
-        /*
-        _spiralWeapon1.Fire(_bulletPrefab);
-        _spiralWeapon2.Fire(_bulletPrefab);
-        */
-        /*
-        if (_shotSpeed <= _shotDuration)
-        {
-            _shotDuration = 0.0f;
-
-            for(int i=0; i< _shotCount; i++)
-            {
-                float shotAngle = _shotAngle + (360.0f * (float)i / (float)_shotCount);
-                CreateBullet(shotAngle);
-            }
-            
-            _shotAngle += _shotAngleRate;
-        }
-        _shotDuration += Time.deltaTime;
-        */
-    }
-
-    /*
-    void CreateBullet(float shotAngle)
-    {
-        // 총알을 생성
-        GameObject bulletObject = GameObject.Instantiate<GameObject>(_bulletPrefab);
-        Vector3 bulletPos = transform.position + (transform.up * 1.0f);
-        bulletObject.transform.position = bulletPos;
-        bulletObject.transform.rotation = transform.rotation;
-        bulletObject.transform.Rotate(Vector3.up, shotAngle);
-
-        Bullet bullet = bulletObject.GetComponent<Bullet>();
-        bullet.SetShotCharacterType(_charType);
-    }
-    */
+		for(int i=0; i< _weaponList.Count; i++)
+		{
+			_weaponList[i].Fire(_bulletPrefab);
+		}
+	}
 }
