@@ -87,6 +87,7 @@ public class Character : MonoBehaviour
 
             UpdateState();
             UpdateMove();
+			UpdateWeapons();
         }
 	}
 
@@ -256,6 +257,7 @@ public class Character : MonoBehaviour
 	void CreateWeapon()
 	{
 		_weaponList.Clear();
+		/*
 		{
 			SpiralWeapon sprialWeapon = new SpiralWeapon();
 			sprialWeapon.SetOwner(this);
@@ -271,6 +273,34 @@ public class Character : MonoBehaviour
 			sprialWeapon.SetBulletSpeedRate(1.0f);
 			sprialWeapon.SetBulletAngleRate(-1.0f);
 			_weaponList.Add(sprialWeapon);
+		}
+		*/
+		{
+			WeaponData weaponData = new WeaponData();
+			weaponData.shotSpeed = 0.1f;
+			weaponData.shotCount = 1;
+			weaponData.angleRate = 10.0f;
+			weaponData.bulletSpeedRate = 0.0f;
+			weaponData.bulletAngleRate = 0.0f;
+			weaponData.changeInterval = 4.0f;
+
+			SpiralWeapon sprialWeapon = new WasherSpiralWeapon();
+			sprialWeapon.Init(this, weaponData);
+			/*
+			sprialWeapon.SetOwner(this);
+			sprialWeapon.SetAngleRate(10.0f);
+			sprialWeapon.SetBulletSpeedRate(0.0f);
+			sprialWeapon.SetBulletAngleRate(0.0f);
+			*/
+			_weaponList.Add(sprialWeapon);
+		}
+	}
+
+	void UpdateWeapons()
+	{
+		for(int i=0; i< _weaponList.Count; i++)
+		{
+			_weaponList[i].Update();
 		}
 	}
 
